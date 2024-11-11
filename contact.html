@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Me</title>
+    <link rel="stylesheet" href="styles.css"> <!-- Ensure this points to your main stylesheet -->
+</head>
+<body class="contact-page"> <!-- Use the class to target specific page styles if needed -->
+    <header>
+        <h1>Contact the Dark Web</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="projects.html">Projects</a></li>
+                <li><a href="writeups.html">Writeups</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="contact-section">
+            <h2>Reach Out from the Shadows</h2>
+            <p>Feel free to contact me through the dark void. I'll respond when you least expect it.</p>
+            
+            <form class="contact-form" action="submit_form.php" method="POST">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" required>
+
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+
+                <label for="message">Message:</label>
+                <textarea id="message" name="message" rows="5" required></textarea>
+
+                <button type="submit">Send Your Message</button>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; RecSecLabs 2024
