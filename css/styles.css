@@ -1,6 +1,6 @@
 /* Overall Dark Theme with Background */
 body {
-    background: url('background_img.jpeg') no-repeat center center fixed; /* Update with your image path */
+    background: url('/css/background_img.jpeg') no-repeat center center fixed; /* Update with your image path */
     background-size: cover;
     color: #e0e0e0;
     font-family: 'Cinzel', serif;
