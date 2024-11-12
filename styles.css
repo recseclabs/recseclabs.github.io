@@ -146,3 +146,89 @@ footer {
     font-size: 0.9em;
     border-top: 2px solid #ff4f4f;
 }
+
+/* ===== TryHackMe Dashboard Styles ===== */
+
+/* Dashboard Intro Section */
+.dashboard-intro {
+    padding: 20px;
+    background-color: #2e2e2e;
+    text-align: center;
+    color: #e0e0e0;
+}
+
+.dashboard-intro h2 {
+    color: #ff4f4f;
+    font-family: "Arial Black", Gadget, sans-serif;
+    font-size: 2em;
+}
+
+.dashboard-intro p {
+    font-size: 1.2em;
+}
+
+/* Writeup List */
+.writeup-list {
+    padding: 20px;
+}
+
+.writeup-list h3 {
+    font-family: "Arial Black", Gadget, sans-serif;
+    color: #ff4f4f;
+    font-size: 1.8em;
+}
+
+.writeup-list ul {
+    list-style: none;
+    padding: 0;
+}
+
+.writeup-list li {
+    margin-bottom: 10px;
+}
+
+.writeup-list li a {
+    color: #e0e0e0;
+    text-decoration: none;
+    font-size: 1.1em;
+    padding: 10px;
+    display: inline-block;
+    border: 1px solid #ff4f4f;
+    background-color: #1c1c1c;
+}
+
+.writeup-list li a:hover {
+    background-color: #333;
+    border-color: #ffae00;
+}
+/* Dropdown Styles */
+.dropdown-content {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: #1c1c1c;
+    min-width: 200px;
+    border: 1px solid #ff4f4f;
+    z-index: 1;
+}
+
+.dropdown-content li {
+    padding: 0;
+}
+
+.dropdown-content li a {
+    color: #e0e0e0;
+    display: block;
+    text-decoration: none;
+    padding: 10px;
+}
+
+.dropdown-content li a:hover {
+    background-color: #333;
+}
+
+/* Show dropdown on hover */
+.dropdown:hover .dropdown-content {
+    display: block;
+}
