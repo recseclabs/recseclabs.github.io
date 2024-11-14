@@ -1,0 +1,128 @@
+/* Basic Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body Styling */
+body {
+    font-family: Helvitica, sans-serif; /* Update with a professional font */
+    background-color: #121212; /* Fallback color in case the image doesn’t load */
+    background-image: url('../images/background_img.jpeg'); /* Adjust the path if needed */
+    background-size: cover; /* Ensures the image covers the entire viewport */
+    background-position: center; /* Centers the image */
+    background-attachment: fixed; /* Keeps it in place when scrolling */
+    background-repeat: no-repeat; /* Avoids tiling the image */
+    color: #e0e0e0;
+    margin: 0;
+}
+
+/* Header Styling */
+header {
+    padding: 20px;
+    background-color: #1a1a1a;
+    text-align: center;
+    border-bottom: 3px solid #ff6b6b;
+}
+
+header h1 {
+    font-family: "Cinzel", serif; /* Example of a unique heading font */
+    color: #ff6b6b;
+    font-size: 2.5em;
+}
+
+/* Navigation Styling */
+.main-nav ul {
+    display: flex;
+    justify-content: center;
+    list-style-type: none;
+    padding: 0;
+    background-color: #1a1a1a;
+}
+
+.main-nav ul li {
+    position: relative;
+    padding: 15px;
+}
+
+.main-nav ul li a {
+    color: #e0e0e0;
+    text-decoration: none;
+    font-size: 1.2em;
+}
+
+/* Mega Menu Dropdown */
+.mega-menu .dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 600px; /* Adjust as needed */
+    background-color: #1a1a1a;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3), 0 0 10px rgba(255, 107, 107, 0.4);
+    border-top: 2px solid #ff6b6b;
+    border-radius: 8px; /* Adds rounded corners */
+}
+
+/* Triangle Tail */
+.mega-menu .dropdown::before {
+    content: '';
+    position: absolute;
+    top: -10px; /* Position the triangle just above the dropdown */
+    left: 20px; /* Adjust to align with the dropdown's starting position */
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid #1a1a1a; /* Matches the dropdown background color */
+}
+
+
+.mega-menu:hover .dropdown {
+    display: flex;
+}
+
+.mega-menu .menu-section {
+    margin-right: 20px;
+    flex: 1;
+}
+
+.mega-menu .menu-section h3 {
+    color: #ff6b6b;
+    margin-bottom: 10px;
+    font-size: 1.3em;
+}
+
+.mega-menu .menu-section ul {
+    list-style-type: none;
+}
+
+.mega-menu .menu-section li a {
+    display: block;
+    padding: 8px 10px;
+    border-radius: 4px;
+    color: #e0e0e0;
+    text-decoration: none;
+}
+
+.mega-menu .menu-section li a:hover {
+    background-color: #333;
+    color: #ffae00;
+}
+
+main {
+    padding: 20px;
+    color: #e0e0e0; /* Matches the text color of the theme */
+    background-color: #1c1c1c; /* Optional background color for contrast */
+    font-family: Arial, sans-serif; /* Or any other font you're using */
+}
+/* Footer */
+footer {
+    background-color: #1a1a1a;
+    text-align: center;
+    padding: 10px;
+    color: #ffae00;
+    font-size: 0.9em;
+}
