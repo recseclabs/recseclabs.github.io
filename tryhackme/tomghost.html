@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Write-up: tomghost</title>
+    <link rel="stylesheet" href="../assets/css/styles.css">
+</head>
+<body>
+    <header>
+        <h1>RecSec Labs Writeup: tomghost</h1>
+        <nav class="main-nav">
+            <a href="../index.html">Home</a>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Summary Section -->
+        <section class="writeup-summary">
+            <h2>Offensive Pentesting: tomghost</h2>
+            <p><strong>Category:</strong> Write-up</p>
+            <p><strong>Difficulty:</strong> Easy</p>
+            <p><strong>Attack Box:</strong> Kali Linux</p>
+        </section>
+        
+        <!-- Objective Section -->
+        <section class="writeup-objective">
+            <h2>Exploit Jenkins to gain an initial shell, then escalate privileges by exploiting Windows authentication tokens.</h2>
+            <p>Exploit a common misconfiguration on a widely used automation server, Jenkins. This tool is used to create continuous integration/continuous development pipelines that allow developers to automatically deploy their code once they made changes to it.
+                After which, an interesting privilege escalation method will be used to get full system access.</p>
+        </section>
+
+
+        <!-- Tools Section -->
+        <section class="writeup-tools">
+            <h2>Tools Used</h2>
+            <ul>
+                <li>Nmap</li>
+                <li>Hydra</li>
+                <li>Burp Suite</li>
+                <li>Metasploit</li>
+                <!-- Additional tools used for tomghost -->
+            </ul>
+        </section>
+
+        <!-- Walkthrough Section -->
+        <section class="writeup-steps">
+            <h3>Walkthrough</h3>
+            <p>Start by scanning the box with Nmap to identify open ports and services:</p>
+            <pre><code>nmap -sV -sC -p- 10.10.10.10</code></pre>
+            <p>Detail the steps involved, commands used, and observations made as you progressed through the challenge...</p>
+            <p>Example of accessing a service:</p>
+            <pre><code>hydra -l admin -P /usr/share/wordlists/rockyou.txt 10.10.10.10 http-form-post "/login:username=^USER^&password=^PASS^:F=incorrect"</code></pre>
+        </section>
+
+        <!-- Conclusion Section -->
+        <section class="writeup-conclusion">
+            <h3>Conclusion</h3>
+            <p>Summarize key takeaways from the tomghost box, including what you learned and any interesting findings or challenges encountered during the process.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 RecSec Labs</p>
+    </footer>
+</body>
+</html>

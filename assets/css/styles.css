@@ -44,6 +44,7 @@ header h1 {
 .main-nav ul li {
     position: relative;
     padding: 15px;
+    z-index: 10;
 }
 
 .main-nav ul li a {
@@ -118,7 +119,125 @@ main {
     background-color: #1c1c1c; /* Optional background color for contrast */
     font-family: Arial, sans-serif; /* Or any other font you're using */
 }
-/* Footer */
+/* Summary and Tools Sections */
+.writeup-summary, .writeup-tools, .writeup-objective {
+    padding: 20px;
+    background-color: #1c1c1c;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.writeup-tools h2, .writeup-summary h2, .writeup-objective h2 {
+    color: #ff6b6b;
+    font-size: 1.5em;
+    margin-bottom: 10px;
+}
+
+.writeup-tools ul {
+    color: #d5d8dc;
+    column-count: 2; /* Adjust to 2, 3, etc., based on preference */
+    column-gap: 40px; /* Space between columns */
+    list-style-type: disc;
+    padding-left: 20px;
+}
+
+.writeup-tools ul li {
+    margin-bottom: 25px; /* spacing between the tools list */
+    break-inside: avoid; /* Prevents items from breaking between columns */
+}
+
+/* Walkthrough Styling */
+.writeup-steps {
+    padding: 20px;
+    background-color: #2e2e2e;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+/* Question Styling */
+.question {
+    font-weight: normal;
+    color: #3498db; /* Highlighted color for questions */
+    margin-bottom: 10px;
+    font-size: 1.1em;
+    line-height: 1.5; /* Improves readability */
+}
+
+/* Solution Styling */
+.solution {
+    font-weight: normal;
+    color: #ffae00; /* A distinct color for solutions */
+    margin-bottom: 10px;
+    font-size: 1.1em;
+    line-height: 1.5;
+}
+
+/* Conclusion Header Styling */
+.writeup-conclusion h2 {
+    color: #ff6b6b;
+    font-size: 1.5em;
+    margin-bottom: 10px;
+}
+
+.writeup-steps pre, .writeup-steps code {
+    font-family: "Courier New", serif; /* Example of a unique heading font */
+    background-color: #1c1c1c;
+    color: #ff6b6b;
+    padding: 5px;
+    border-radius: 4px;
+    display: block;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+.writeup-steps p {
+    margin-top: 10px; /* Add space above each question or solution */
+    margin-bottom: 10px; /* Add space below for readability */
+}
+
+/* Writeup Banner Container */
+.writeup-banner {
+    width: 100%; /* Makes the banner span the full width of the page */
+    height: 600px; /* Adjust height for the banner */
+    overflow: visible; /* Ensures any overflowing content is clipped */
+    position: relative; /* Ensures the image stays within the banner */
+    z-index: 1;
+}
+
+/* Banner Image Styling */
+.writeup-banner img {
+    width: 100%; /* Ensures the image spans the full width */
+    height: 100%; /* Ensures the image spans the full height */
+    object-fit: cover; /* Ensures the image covers the banner area without stretching */
+    object-position: 50% 25%; /* Adjust focus area */
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+/* Container for Screenshots */
+.screenshot-container {
+    display: flex;
+    flex-wrap: wrap; /* Allows wrapping for multiple images */
+    gap: 20px; /* Space between images */
+    justify-content: flex-start; /* Aligns images to the left */
+    margin: 20px 0;
+    align-items: center;
+}
+
+/* Images Styling */
+.zoom-image {
+    width: 100%;
+    max-width: 400px; /* Adjust size per your design */
+    border-radius: 8px; /* Optional: Rounded corners */
+    transition: transform 0.2s; /* Smooth zoom effect on hover */
+}
+
+.zoom-image:hover {
+    transform: scale(1.05); /* Slight zoom effect */
+    cursor: pointer; /* Pointer cursor to indicate clickability */
+}
+
+/* Footer Styling */
 footer {
     background-color: #1a1a1a;
     text-align: center;
