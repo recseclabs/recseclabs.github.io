@@ -59,12 +59,46 @@ header h1 {
     position: absolute;
     top: 100%;
     left: 0;
-    width: 600px; /* Adjust as needed */
+    width: auto; /* Adjust as needed */
     background-color: #1a1a1a;
     padding: 20px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3), 0 0 10px rgba(255, 107, 107, 0.4);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
     border-top: 2px solid #ff6b6b;
-    border-radius: 8px; /* Adds rounded corners */
+    border-radius: 8px;
+    flex-wrap: wrap; /* Enables wrapping within the dropdown itself */
+}
+
+/* Flexbox for Links */
+.mega-menu .link-group {
+    display: flex;
+    flex-wrap: wrap; /* Allows links to wrap into rows */
+    justify-content: flex-start; /* Align rows to the left */
+    gap: 10px; /* Space between rows and columns */
+}
+
+.mega-menu .link-group ul {
+    flex: 1 1 45%; /* Allows columns to occupy about 45% of the available space */
+    list-style: none;
+    padding: 0;
+    margin: 0; /* Ensures no extra spacing */
+}
+
+.mega-menu .link-group ul li {
+    margin-bottom: 5px; /* Adds spacing between list items */
+}
+
+.mega-menu .link-group ul li a {
+    display: block;
+    padding: 5px;
+    text-decoration: none;
+    color: #e0e0e0;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.mega-menu .link-group ul li a:hover {
+    background-color: #333;
+    color: #ffae00;
 }
 
 /* Triangle Tail */
@@ -80,14 +114,15 @@ header h1 {
     border-bottom: 10px solid #1a1a1a; /* Matches the dropdown background color */
 }
 
-
+/* Hover to Show Dropdown */
 .mega-menu:hover .dropdown {
-    display: flex;
+    display: flex; /* Shows the dropdown */
 }
 
+/* Menu Section Styling */
 .mega-menu .menu-section {
-    margin-right: 20px;
-    flex: 1;
+    flex: 1 1 100%; /* Ensure each section spans full width within the dropdown */
+    margin-bottom: 10px;
 }
 
 .mega-menu .menu-section h3 {
